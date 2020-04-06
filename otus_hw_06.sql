@@ -1,4 +1,4 @@
-﻿USE WideWorldImporters;
+USE WideWorldImporters;
 --1. Посчитать среднюю цену товара, общую сумму продажи по месяцам
 SELECT 
 	FORMAT(EOMONTH(i.InvoiceDate),'MM.yyyy') AS MonthOfSale,
@@ -20,22 +20,21 @@ GROUP BY EOMONTH(i.InvoiceDate)
 HAVING SUM(il.Quantity * il.UnitPrice) > 10000
 ORDER BY EOMONTH(i.InvoiceDate) 
 --3. Вывести сумму продаж, дату первой продажи и количество проданного по месяцам, по товарам, продажи которых менее 50 ед в месяц.
--- Возможно я не правильно понял из каких таблиц нужно выбирать данные,
--- но мй запрос по учебной базе не выдаёт товары, которых было продано менее 50 единиц в месяц, поэтому для примера я взял вместо 50 ед. 61000 ед.
 SELECT
 	YEAR(i.InvoiceDate) AS YearOfSale,
 	EOMONTH(i.InvoiceDate) AS MonthOfSale,
-	si.StockItemID,
+	il.StockItemID,
+	si.StockItemName,
 	MIN(i.InvoiceDate) AS FirstSaleDate,
 	SUM(il.Quantity*il.UnitPrice) AS TotalAmount,
-	SUM(si.Quantity) AS TotalQuantity
+	SUM(il.Quantity) AS TotalQuantity
 FROM Sales.Invoices AS i
 INNER JOIN Sales.InvoiceLines AS il
-	ON i.InvoiceID = il.InvoiceID 
-INNER JOIN Sales.InvoiceLines AS si
+	ON i.InvoiceID = il.InvoiceID
+INNER JOIN Warehouse.StockItems AS si
 	ON il.StockItemID = si.StockItemID
-GROUP BY si.StockItemID,YEAR(i.InvoiceDate),EOMONTH(i.InvoiceDate)
-HAVING SUM(si.Quantity) < 61000
+GROUP BY il.StockItemID,si.StockItemName,YEAR(i.InvoiceDate),EOMONTH(i.InvoiceDate)
+HAVING SUM(il.Quantity) < 50
 ORDER BY YearOfSale, MonthOfSale
 
 --4. Написать рекурсивный CTE sql запрос и заполнить им временную таблицу и табличную переменную
@@ -75,7 +74,6 @@ WITH cteReports (EmpID, FirstName, LastName, Title, SupervisorID, EmpLevel, Path
     FROM dbo.MyEmployees AS e
     INNER JOIN cteReports AS r ON e.ManagerID = r.EmpID
 )
-
 SELECT
 	EmpID,
 	Separator + FirstName + ' ' + LastName AS Name,
