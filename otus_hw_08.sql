@@ -1,7 +1,7 @@
 USE WideWorldImporters;
 set statistics time on;
--- 1. Напишите запрос с временной таблицей и перепишите его с табличной переменной. Сравните план
--- А) с временной таблицей:
+-- 1. ГЌГ ГЇГЁГёГЁГІГҐ Г§Г ГЇГ°Г®Г± Г± ГўГ°ГҐГ¬ГҐГ­Г­Г®Г© ГІГ ГЎГ«ГЁГ¶ГҐГ© ГЁ ГЇГҐГ°ГҐГЇГЁГёГЁГІГҐ ГҐГЈГ® Г± ГІГ ГЎГ«ГЁГ·Г­Г®Г© ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г©. Г‘Г°Г ГўГ­ГЁГІГҐ ГЇГ«Г Г­
+-- ГЂ) Г± ГўГ°ГҐГ¬ГҐГ­Г­Г®Г© ГІГ ГЎГ«ГЁГ¶ГҐГ©:
 SELECT 
 	EOMONTH(i.InvoiceDate) As SaleMonth, 
 	SUM(il.Quantity*il.UnitPrice) AS TotalAmount 
@@ -28,10 +28,10 @@ group by t1.SaleMonth, t1.TotalAmount
 order by t1.SaleMonth
 
 SELECT
-	i.InvoiceID AS 'Id продажи', 
-	i.InvoiceDate AS 'Дата продажи', 
-	SUM(il.Quantity*il.UnitPrice) AS 'Сумма продажи', 
-	sm.Total AS 'Итого за месяц'
+	i.InvoiceID AS 'Id ГЇГ°Г®Г¤Г Г¦ГЁ', 
+	i.InvoiceDate AS 'Г„Г ГІГ  ГЇГ°Г®Г¤Г Г¦ГЁ', 
+	SUM(il.Quantity*il.UnitPrice) AS 'Г‘ГіГ¬Г¬Г  ГЇГ°Г®Г¤Г Г¦ГЁ', 
+	sm.Total AS 'Г€ГІГ®ГЈГ® Г§Г  Г¬ГҐГ±ГїГ¶'
 FROM Sales.Invoices AS i
 INNER JOIN #SalesByMonth As sm
 	ON EOMONTH(i.InvoiceDate) = sm.SaleMonth
@@ -43,7 +43,7 @@ ORDER BY i.InvoiceDate
 
 DROP TABLE #SalesByMonth;
 
--- Б) с табличной переменной
+-- ГЃ) Г± ГІГ ГЎГ«ГЁГ·Г­Г®Г© ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г©
 DECLARE @SalesTab AS Table(  
     SaleMonth date,  
     TotalAmount int);
@@ -76,7 +76,7 @@ inner join @SalesTab t2
 group by t1.SaleMonth, t1.TotalAmount
 order by t1.SaleMonth
 
-SELECT i.InvoiceID AS 'Id продажи', i.InvoiceDate AS 'Дата продажи', SUM(il.Quantity*il.UnitPrice) AS 'Сумма продажи', sm.Total AS 'Итого за месяц'
+SELECT i.InvoiceID AS 'Id ГЇГ°Г®Г¤Г Г¦ГЁ', i.InvoiceDate AS 'Г„Г ГІГ  ГЇГ°Г®Г¤Г Г¦ГЁ', SUM(il.Quantity*il.UnitPrice) AS 'Г‘ГіГ¬Г¬Г  ГЇГ°Г®Г¤Г Г¦ГЁ', sm.Total AS 'Г€ГІГ®ГЈГ® Г§Г  Г¬ГҐГ±ГїГ¶'
 FROM Sales.Invoices AS i
 INNER JOIN @SalesByMonthTab As sm
 	ON EOMONTH(i.InvoiceDate) = sm.SaleMonth
@@ -86,7 +86,7 @@ WHERE i.InvoiceDate >= '2015-01-01'
 GROUP BY i.InvoiceID, i.InvoiceDate, i.InvoiceDate, sm.total
 ORDER BY i.InvoiceDate
 
--- В) Нарастающий итог с помощью оконных функций
+-- Г‚) ГЌГ Г°Г Г±ГІГ ГѕГ№ГЁГ© ГЁГІГ®ГЈ Г± ГЇГ®Г¬Г®Г№ГјГѕ Г®ГЄГ®Г­Г­Г»Гµ ГґГіГ­ГЄГ¶ГЁГ©
 SELECT 
 	s.SaleMonth, 
 	s.TotalAmount,
@@ -97,7 +97,7 @@ FROM #Sales AS s
 order by s.SaleMonth
 
 DROP TABLE #Sales;
---2. Вывести список 2х самых популярных продуктов (по кол-ву проданных) в каждом месяце за 2016й год (по 2 самых популярных продукта в каждом месяце)
+--2. Г‚Г»ГўГҐГ±ГІГЁ Г±ГЇГЁГ±Г®ГЄ 2Гµ Г±Г Г¬Г»Гµ ГЇГ®ГЇГіГ«ГїГ°Г­Г»Гµ ГЇГ°Г®Г¤ГіГЄГІГ®Гў (ГЇГ® ГЄГ®Г«-ГўГі ГЇГ°Г®Г¤Г Г­Г­Г»Гµ) Гў ГЄГ Г¦Г¤Г®Г¬ Г¬ГҐГ±ГїГ¶ГҐ Г§Г  2016Г© ГЈГ®Г¤ (ГЇГ® 2 Г±Г Г¬Г»Гµ ГЇГ®ГЇГіГ«ГїГ°Г­Г»Гµ ГЇГ°Г®Г¤ГіГЄГІГ  Гў ГЄГ Г¦Г¤Г®Г¬ Г¬ГҐГ±ГїГ¶ГҐ)
 WITH CTE_Sales AS
 (
 	SELECT 
@@ -119,28 +119,28 @@ SELECT *
 FROM CTE_Sales
 WHERE CTE_Sales.RowNum < 3
 
---3. Функции одним запросом
+--3. Г”ГіГ­ГЄГ¶ГЁГЁ Г®Г¤Г­ГЁГ¬ Г§Г ГЇГ°Г®Г±Г®Г¬
 SELECT
 	s.StockItemID AS 'ID',
-	s.StockItemName AS 'Наименование',
-	s.Brand AS 'Брэнд',
-	s.UnitPrice AS 'Цена',
-	ROW_NUMBER() OVER (PARTITION BY LEFT(s.StockItemName,1) ORDER BY s.StockItemName) AS 'Порядковый номер по 1-му символу',
-	COUNT(*) OVER (PARTITION BY 0) AS 'Общее количество',
-	COUNT(*) OVER (PARTITION BY LEFT(s.StockItemName,1)) AS 'Количество по 1-му символу',
-	LEAD(s.StockItemID) OVER(ORDER BY s.StockItemName) AS 'Следующий ID',
-	LAG(s.StockItemID) OVER(ORDER BY s.StockItemName) AS 'Предыдущий ID',
-	ISNULL(LAG(s.StockItemName,2) OVER(ORDER BY s.StockItemName),'No Items') AS 'Название товара 2 строки назад'
+	s.StockItemName AS 'ГЌГ ГЁГ¬ГҐГ­Г®ГўГ Г­ГЁГҐ',
+	s.Brand AS 'ГЃГ°ГЅГ­Г¤',
+	s.UnitPrice AS 'Г–ГҐГ­Г ',
+	ROW_NUMBER() OVER (PARTITION BY LEFT(s.StockItemName,1) ORDER BY s.StockItemName) AS 'ГЏГ®Г°ГїГ¤ГЄГ®ГўГ»Г© Г­Г®Г¬ГҐГ° ГЇГ® 1-Г¬Гі Г±ГЁГ¬ГўГ®Г«Гі',
+	COUNT(*) OVER (PARTITION BY 0) AS 'ГЋГЎГ№ГҐГҐ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ®',
+	COUNT(*) OVER (PARTITION BY LEFT(s.StockItemName,1)) AS 'ГЉГ®Г«ГЁГ·ГҐГ±ГІГўГ® ГЇГ® 1-Г¬Гі Г±ГЁГ¬ГўГ®Г«Гі',
+	LEAD(s.StockItemID) OVER(ORDER BY s.StockItemName) AS 'Г‘Г«ГҐГ¤ГіГѕГ№ГЁГ© ID',
+	LAG(s.StockItemID) OVER(ORDER BY s.StockItemName) AS 'ГЏГ°ГҐГ¤Г»Г¤ГіГ№ГЁГ© ID',
+	ISNULL(LAG(s.StockItemName,2) OVER(ORDER BY s.StockItemName),'No Items') AS 'ГЌГ Г§ГўГ Г­ГЁГҐ ГІГ®ГўГ Г°Г  2 Г±ГІГ°Г®ГЄГЁ Г­Г Г§Г Г¤'
 FROM Warehouse.StockItems AS s
 
---сформируйте 30 групп товаров по полю вес товара на 1 шт
+--Г±ГґГ®Г°Г¬ГЁГ°ГіГ©ГІГҐ 30 ГЈГ°ГіГЇГЇ ГІГ®ГўГ Г°Г®Гў ГЇГ® ГЇГ®Г«Гѕ ГўГҐГ± ГІГ®ГўГ Г°Г  Г­Г  1 ГёГІ
 SELECT
 	*,
 	NTILE(30) OVER(ORDER BY TypicalWeightPerUnit) GroupNumber
 FROM Warehouse.StockItems AS si;
 
---4. По каждому сотруднику выведите последнего клиента, которому сотрудник что-то продал
---В результатах должны быть ид и фамилия сотрудника, ид и название клиента, дата продажи, сумму сделки
+--4. ГЏГ® ГЄГ Г¦Г¤Г®Г¬Гі Г±Г®ГІГ°ГіГ¤Г­ГЁГЄГі ГўГ»ГўГҐГ¤ГЁГІГҐ ГЇГ®Г±Г«ГҐГ¤Г­ГҐГЈГ® ГЄГ«ГЁГҐГ­ГІГ , ГЄГ®ГІГ®Г°Г®Г¬Гі Г±Г®ГІГ°ГіГ¤Г­ГЁГЄ Г·ГІГ®-ГІГ® ГЇГ°Г®Г¤Г Г«
+--Г‚ Г°ГҐГ§ГіГ«ГјГІГ ГІГ Гµ Г¤Г®Г«Г¦Г­Г» ГЎГ»ГІГј ГЁГ¤ ГЁ ГґГ Г¬ГЁГ«ГЁГї Г±Г®ГІГ°ГіГ¤Г­ГЁГЄГ , ГЁГ¤ ГЁ Г­Г Г§ГўГ Г­ГЁГҐ ГЄГ«ГЁГҐГ­ГІГ , Г¤Г ГІГ  ГЇГ°Г®Г¤Г Г¦ГЁ, Г±ГіГ¬Г¬Гі Г±Г¤ГҐГ«ГЄГЁ
 WITH CTE_LastInvoicesByPersons AS
 (
 	SELECT DISTINCT
@@ -163,18 +163,18 @@ INNER JOIN Sales.Invoices AS i
 INNER JOIN Sales.Customers AS c
 	ON i.CustomerID = c.CustomerID;
 
---5. Выберите по каждому клиенту 2 самых дорогих товара, которые он покупал
---В результатах должно быть ид клиета, его название, ид товара, цена, дата покупки
+--5. Г‚Г»ГЎГҐГ°ГЁГІГҐ ГЇГ® ГЄГ Г¦Г¤Г®Г¬Гі ГЄГ«ГЁГҐГ­ГІГі 2 Г±Г Г¬Г»Гµ Г¤Г®Г°Г®ГЈГЁГµ ГІГ®ГўГ Г°Г , ГЄГ®ГІГ®Г°Г»ГҐ Г®Г­ ГЇГ®ГЄГіГЇГ Г«
+--Г‚ Г°ГҐГ§ГіГ«ГјГІГ ГІГ Гµ Г¤Г®Г«Г¦Г­Г® ГЎГ»ГІГј ГЁГ¤ ГЄГ«ГЁГҐГІГ , ГҐГЈГ® Г­Г Г§ГўГ Г­ГЁГҐ, ГЁГ¤ ГІГ®ГўГ Г°Г , Г¶ГҐГ­Г , Г¤Г ГІГ  ГЇГ®ГЄГіГЇГЄГЁ 
 
 WITH CTE_Sales AS
 (
 	SELECT 
-		i.CustomerID AS [ИД клиента],
-		c.CustomerName AS [Наименование клиента],
-		i.InvoiceDate AS [Дата покупки],
-		il.StockItemId [ИД товара],
-		MAX(il.UnitPrice) AS [Цена товара],
-		ROW_NUMBER() OVER (PARTITION BY i.CustomerID ORDER BY MAX(il.UnitPrice) DESC) AS [Номер в группе]
+		i.CustomerID AS [Г€Г„ ГЄГ«ГЁГҐГ­ГІГ ],
+		c.CustomerName AS [ГЌГ ГЁГ¬ГҐГ­Г®ГўГ Г­ГЁГҐ ГЄГ«ГЁГҐГ­ГІГ ],
+		i.InvoiceDate AS [Г„Г ГІГ  ГЇГ®ГЄГіГЇГЄГЁ],
+		il.StockItemId [Г€Г„ ГІГ®ГўГ Г°Г ],
+		MAX(il.UnitPrice) AS [Г–ГҐГ­Г  ГІГ®ГўГ Г°Г ],
+		ROW_NUMBER() OVER (PARTITION BY i.CustomerID ORDER BY MAX(il.UnitPrice) DESC) AS [ГЌГ®Г¬ГҐГ° Гў ГЈГ°ГіГЇГЇГҐ]
 	--INTO #Sales
 	FROM
 		Sales.Invoices AS i
@@ -186,4 +186,4 @@ WITH CTE_Sales AS
 )
 SELECT *
 FROM CTE_Sales
-WHERE CTE_Sales.[Номер в группе] < 3
+WHERE CTE_Sales.[ГЌГ®Г¬ГҐГ° Гў ГЈГ°ГіГЇГЇГҐ] < 3
