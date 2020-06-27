@@ -1,0 +1,6 @@
+C:\Users\averk.LAPTOP-V3KG4095\source\repos\SplitStrings_DLL\SplitStrings\bin\Debug\SplitStrings.dll
+C:\Users\averk.LAPTOP-V3KG4095\source\repos\SplitStrings_DLL\SplitStrings\bin\Debug\SplitStrings.pdb
+C:\Users\averk.LAPTOP-V3KG4095\source\repos\SplitStrings_DLL\SplitStrings\obj\Debug\SplitStrings.csprojAssemblyReference.cache
+C:\Users\averk.LAPTOP-V3KG4095\source\repos\SplitStrings_DLL\SplitStrings\obj\Debug\SplitStrings.csproj.CoreCompileInputs.cache
+C:\Users\averk.LAPTOP-V3KG4095\source\repos\SplitStrings_DLL\SplitStrings\obj\Debug\SplitStrings.dll
+C:\Users\averk.LAPTOP-V3KG4095\source\repos\SplitStrings_DLL\SplitStrings\obj\Debug\SplitStrings.pdb
